@@ -28,6 +28,7 @@ from .disconnected_event import DisconnectedEvent
 from .edit_message_request import EditMessageRequest
 from .error_response import ErrorResponse
 from .event_type import EventType
+from .forward_messages_request import ForwardMessagesRequest
 from .health_response import HealthResponse
 from .history_response import HistoryResponse
 from .invite_link_response import InviteLinkResponse
@@ -130,6 +131,7 @@ __all__ = (
     "EditMessageRequest",
     "ErrorResponse",
     "EventType",
+    "ForwardMessagesRequest",
     "HealthResponse",
     "HistoryResponse",
     "InviteLinkResponse",

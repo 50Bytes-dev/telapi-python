@@ -64,6 +64,7 @@ from 400, also on one the schema does not list for that call.
 | `api.webhook.rotate_webhook_secret` | `POST /webhook/secret` |
 | `api.media.upload_media` | `POST /media` |
 | `api.messages.send_message` | `POST /messages` |
+| `api.messages.forward_messages` | `POST /chats/{chat_id}/forward` |
 | `api.messages.edit_message` | `PATCH /chats/{chat_id}/messages/{message_id}` |
 | `api.messages.delete_messages` | `POST /chats/{chat_id}/messages/delete` |
 | `api.chats.list_chats` | `GET /chats` |
@@ -173,6 +174,26 @@ else:
 ```
 
 A file goes as multipart with `UploadMediaForm(file=File(payload=..., file_name="photo.jpg"), type_=...)`.
+
+### Forward
+
+```python
+from telapi_python.api.messages import forward_messages
+from telapi_python.models import ForwardMessagesRequest
+
+res = forward_messages.sync(
+    -1001234567890,  # into this chat
+    client=account,
+    body=ForwardMessagesRequest(
+        from_chat_id=me.id,  # the account's own id is its Saved Messages
+        message_ids=[501, 502, 503],  # 1 to 100, one call
+        drop_author=True,  # as the account's own posts, without "Forwarded from"
+        ref="batch-17",
+    ),
+)
+```
+
+For Telegram's antispam a forward is a send: the same `flood_wait` and `paused` answers apply.
 Address a person by `phone` or `username` instead of `chat_id` until the account has seen the chat.
 
 ### Chats and history

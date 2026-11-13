@@ -35,6 +35,8 @@ class SendMessageRequest:
         no_webpage (bool | Unset): No link preview
         ref (str | Unset): Your idempotency key (up to 128 bytes); the same `ref` never sends twice Example:
             order-1842-confirmation.
+        schedule_date (int | Unset): Unix time in seconds to send the message at; it goes into the chat's scheduled
+            queue and the answer's ids are ids in that queue. 0 or absent sends now.
     """
 
     chat_id: int | Unset = UNSET
@@ -47,6 +49,7 @@ class SendMessageRequest:
     silent: bool | Unset = UNSET
     no_webpage: bool | Unset = UNSET
     ref: str | Unset = UNSET
+    schedule_date: int | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -74,6 +77,8 @@ class SendMessageRequest:
 
         ref = self.ref
 
+        schedule_date = self.schedule_date
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
@@ -97,6 +102,8 @@ class SendMessageRequest:
             field_dict["noWebpage"] = no_webpage
         if ref is not UNSET:
             field_dict["ref"] = ref
+        if schedule_date is not UNSET:
+            field_dict["scheduleDate"] = schedule_date
 
         return field_dict
 
@@ -128,6 +135,8 @@ class SendMessageRequest:
 
         ref = d.pop("ref", UNSET)
 
+        schedule_date = d.pop("scheduleDate", UNSET)
+
         send_message_request = cls(
             chat_id=chat_id,
             phone=phone,
@@ -139,6 +148,7 @@ class SendMessageRequest:
             silent=silent,
             no_webpage=no_webpage,
             ref=ref,
+            schedule_date=schedule_date,
         )
 
         send_message_request.additional_properties = d

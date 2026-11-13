@@ -156,6 +156,12 @@ def sync_detailed(
     does not carry the ids, `messageIds` is empty and `messageId` is
     absent.
 
+    With `scheduleDate` the message goes into the
+    chat's scheduled queue (Telegram sends it then; a date less than
+    about 10 s ahead sends at once). The answer's ids are then ids in
+    the scheduled queue, not in the chat's history, and no `Message`
+    event is sent for the send itself.
+
     Args:
         body (SendMessageRequest): Exactly one of `chatId`, `phone` and `username`; `text`,
             `attachments` or both.
@@ -211,6 +217,12 @@ def sync(
     does not carry the ids, `messageIds` is empty and `messageId` is
     absent.
 
+    With `scheduleDate` the message goes into the
+    chat's scheduled queue (Telegram sends it then; a date less than
+    about 10 s ahead sends at once). The answer's ids are then ids in
+    the scheduled queue, not in the chat's history, and no `Message`
+    event is sent for the send itself.
+
     Args:
         body (SendMessageRequest): Exactly one of `chatId`, `phone` and `username`; `text`,
             `attachments` or both.
@@ -260,6 +272,12 @@ async def asyncio_detailed(
     known), or this request's first attempt did. When Telegram's answer
     does not carry the ids, `messageIds` is empty and `messageId` is
     absent.
+
+    With `scheduleDate` the message goes into the
+    chat's scheduled queue (Telegram sends it then; a date less than
+    about 10 s ahead sends at once). The answer's ids are then ids in
+    the scheduled queue, not in the chat's history, and no `Message`
+    event is sent for the send itself.
 
     Args:
         body (SendMessageRequest): Exactly one of `chatId`, `phone` and `username`; `text`,
@@ -313,6 +331,12 @@ async def asyncio(
     known), or this request's first attempt did. When Telegram's answer
     does not carry the ids, `messageIds` is empty and `messageId` is
     absent.
+
+    With `scheduleDate` the message goes into the
+    chat's scheduled queue (Telegram sends it then; a date less than
+    about 10 s ahead sends at once). The answer's ids are then ids in
+    the scheduled queue, not in the chat's history, and no `Message`
+    event is sent for the send itself.
 
     Args:
         body (SendMessageRequest): Exactly one of `chatId`, `phone` and `username`; `text`,

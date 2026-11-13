@@ -10,7 +10,7 @@ from telapi_python.api.chats import list_chats
 from telapi_python.api.health import get_health
 from telapi_python.api.login import start_qr_login, submit_login_code, submit_login_password
 from telapi_python.api.media import upload_media
-from telapi_python.api.messages import send_message
+from telapi_python.api.messages import forward_messages, send_message
 from telapi_python.api.session import connect
 from telapi_python.api.webhook import rotate_webhook_secret
 from telapi_python.models import (
@@ -20,6 +20,7 @@ from telapi_python.models import (
     CreateAccountResponse,
     ErrorResponse,
     EventType,
+    ForwardMessagesRequest,
     HealthResponse,
     LoginResponse,
     MediaUploadType,
@@ -87,6 +88,29 @@ def test_a_send_parses_its_answer_and_sends_only_the_given_fields():
         "text": "Hello!",
         "attachments": ["tgm1.abc"],
         "ref": "order-1042",
+    }
+
+
+def test_a_forward_goes_to_the_path_chat_with_only_the_given_fields():
+    rec = Recorder(
+        200, {"success": True, "chatId": -1001234567890, "messageIds": [501, 502], "messageId": 501, "duplicate": False}
+    )
+    res = forward_messages.sync(
+        -1001234567890,
+        client=account_client(rec),
+        body=ForwardMessagesRequest(from_chat_id=777, message_ids=[10, 11], drop_author=True, ref="batch-1"),
+    )
+
+    assert isinstance(res, SendMessageResponse)
+    assert res.message_ids == [501, 502]
+    request = rec.requests[0]
+    assert request.method == "POST"
+    assert request.url.path == "/chats/-1001234567890/forward"
+    assert json.loads(request.content) == {
+        "fromChatId": 777,
+        "messageIds": [10, 11],
+        "dropAuthor": True,
+        "ref": "batch-1",
     }
 
 
