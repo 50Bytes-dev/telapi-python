@@ -37,6 +37,8 @@ class ErrorResponse:
         attempts_left (int | Unset): `invalid_code`, `invalid_password`: tries left before the login fails Example: 4.
         rejected_attachments (list[int] | Unset): `attachment_rejected`: the indexes of the unusable attachments
             Example: [1].
+        saved_messages_left (list[int] | Unset): `POST /messages/relay`: the ids of the copy left in Saved Messages when
+            deleting it failed
     """
 
     success: bool
@@ -48,6 +50,7 @@ class ErrorResponse:
     step: str | Unset = UNSET
     attempts_left: int | Unset = UNSET
     rejected_attachments: list[int] | Unset = UNSET
+    saved_messages_left: list[int] | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -73,6 +76,10 @@ class ErrorResponse:
         if not isinstance(self.rejected_attachments, Unset):
             rejected_attachments = self.rejected_attachments
 
+        saved_messages_left: list[int] | Unset = UNSET
+        if not isinstance(self.saved_messages_left, Unset):
+            saved_messages_left = self.saved_messages_left
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -94,6 +101,8 @@ class ErrorResponse:
             field_dict["attemptsLeft"] = attempts_left
         if rejected_attachments is not UNSET:
             field_dict["rejectedAttachments"] = rejected_attachments
+        if saved_messages_left is not UNSET:
+            field_dict["savedMessagesLeft"] = saved_messages_left
 
         return field_dict
 
@@ -125,6 +134,8 @@ class ErrorResponse:
 
         rejected_attachments = cast(list[int], d.pop("rejectedAttachments", UNSET))
 
+        saved_messages_left = cast(list[int], d.pop("savedMessagesLeft", UNSET))
+
         error_response = cls(
             success=success,
             code=code,
@@ -135,6 +146,7 @@ class ErrorResponse:
             step=step,
             attempts_left=attempts_left,
             rejected_attachments=rejected_attachments,
+            saved_messages_left=saved_messages_left,
         )
 
         error_response.additional_properties = d

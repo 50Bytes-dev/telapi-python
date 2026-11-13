@@ -10,7 +10,7 @@ from telapi_python.api.chats import list_chats
 from telapi_python.api.health import get_health
 from telapi_python.api.login import start_qr_login, submit_login_code, submit_login_password
 from telapi_python.api.media import upload_media
-from telapi_python.api.messages import forward_messages, send_message
+from telapi_python.api.messages import forward_messages, relay_message, send_message
 from telapi_python.api.session import connect
 from telapi_python.api.webhook import rotate_webhook_secret
 from telapi_python.models import (
@@ -24,6 +24,8 @@ from telapi_python.models import (
     HealthResponse,
     LoginResponse,
     MediaUploadType,
+    RelayMessageRequest,
+    RelayMessageResponse,
     SendMessageRequest,
     SendMessageResponse,
     SubmitLoginCodeRequest,
@@ -111,6 +113,36 @@ def test_a_forward_goes_to_the_path_chat_with_only_the_given_fields():
         "messageIds": [10, 11],
         "dropAuthor": True,
         "ref": "batch-1",
+    }
+
+
+def test_a_relayed_send_parses_its_answer_and_the_copy_left_in_saved_messages():
+    rec = Recorder(
+        200,
+        {
+            "success": True,
+            "chatId": -1001234567890,
+            "messageIds": [5089],
+            "messageId": 5089,
+            "duplicate": False,
+            "savedMessagesLeft": [6626],
+        },
+    )
+    res = relay_message.sync(
+        client=account_client(rec),
+        body=RelayMessageRequest(chat_id=-1001234567890, text="Платье", attachments=["tgm1.abc"], ref="product-1042"),
+    )
+
+    assert isinstance(res, RelayMessageResponse)
+    assert res.message_ids == [5089]
+    assert res.saved_messages_left == [6626]
+    request = rec.requests[0]
+    assert request.url.path == "/messages/relay"
+    assert json.loads(request.content) == {
+        "chatId": -1001234567890,
+        "text": "Платье",
+        "attachments": ["tgm1.abc"],
+        "ref": "product-1042",
     }
 
 

@@ -72,6 +72,8 @@ from .paused_event import PausedEvent
 from .reaction import Reaction
 from .reactions_changed_data import ReactionsChangedData
 from .reactions_changed_event import ReactionsChangedEvent
+from .relay_message_request import RelayMessageRequest
+from .relay_message_response import RelayMessageResponse
 from .resumed_data import ResumedData
 from .resumed_event import ResumedEvent
 from .send_message_request import SendMessageRequest
@@ -175,6 +177,8 @@ __all__ = (
     "Reaction",
     "ReactionsChangedData",
     "ReactionsChangedEvent",
+    "RelayMessageRequest",
+    "RelayMessageResponse",
     "ResumedData",
     "ResumedEvent",
     "SendMessageRequest",

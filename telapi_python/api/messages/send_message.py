@@ -131,7 +131,11 @@ def sync_detailed(
 ) -> Response[ErrorResponse | SendMessageResponse]:
     r"""Send a message
 
-     Sends text, or up to 10 attachments with the text as the caption of
+     For posting many messages into a group or channel use
+    `POST /messages/relay`, which holds Telegram's flood limits far
+    better.
+
+    Sends text, or up to 10 attachments with the text as the caption of
     the first (2 to 10 make an album; Telegram decides which mixes it
     takes). Address it by `chatId`, `phone` or `username` (exactly
     one). Text is at most 4096 UTF-16 units; a caption at most 1024
@@ -192,7 +196,11 @@ def sync(
 ) -> ErrorResponse | SendMessageResponse | None:
     r"""Send a message
 
-     Sends text, or up to 10 attachments with the text as the caption of
+     For posting many messages into a group or channel use
+    `POST /messages/relay`, which holds Telegram's flood limits far
+    better.
+
+    Sends text, or up to 10 attachments with the text as the caption of
     the first (2 to 10 make an album; Telegram decides which mixes it
     takes). Address it by `chatId`, `phone` or `username` (exactly
     one). Text is at most 4096 UTF-16 units; a caption at most 1024
@@ -248,7 +256,11 @@ async def asyncio_detailed(
 ) -> Response[ErrorResponse | SendMessageResponse]:
     r"""Send a message
 
-     Sends text, or up to 10 attachments with the text as the caption of
+     For posting many messages into a group or channel use
+    `POST /messages/relay`, which holds Telegram's flood limits far
+    better.
+
+    Sends text, or up to 10 attachments with the text as the caption of
     the first (2 to 10 make an album; Telegram decides which mixes it
     takes). Address it by `chatId`, `phone` or `username` (exactly
     one). Text is at most 4096 UTF-16 units; a caption at most 1024
@@ -307,7 +319,11 @@ async def asyncio(
 ) -> ErrorResponse | SendMessageResponse | None:
     r"""Send a message
 
-     Sends text, or up to 10 attachments with the text as the caption of
+     For posting many messages into a group or channel use
+    `POST /messages/relay`, which holds Telegram's flood limits far
+    better.
+
+    Sends text, or up to 10 attachments with the text as the caption of
     the first (2 to 10 make an album; Telegram decides which mixes it
     takes). Address it by `chatId`, `phone` or `username` (exactly
     one). Text is at most 4096 UTF-16 units; a caption at most 1024

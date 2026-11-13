@@ -64,6 +64,7 @@ from 400, also on one the schema does not list for that call.
 | `api.webhook.rotate_webhook_secret` | `POST /webhook/secret` |
 | `api.media.upload_media` | `POST /media` |
 | `api.messages.send_message` | `POST /messages` |
+| `api.messages.relay_message` | `POST /messages/relay` |
 | `api.messages.forward_messages` | `POST /chats/{chat_id}/forward` |
 | `api.messages.edit_message` | `PATCH /chats/{chat_id}/messages/{message_id}` |
 | `api.messages.delete_messages` | `POST /chats/{chat_id}/messages/delete` |
@@ -174,6 +175,33 @@ else:
 ```
 
 A file goes as multipart with `UploadMediaForm(file=File(payload=..., file_name="photo.jpg"), type_=...)`.
+
+### Posting many messages: `relay_message`
+
+For catalogs, product feeds and any run of posts into one group or channel, use
+`relay_message`, not `send_message`. It posts one message through the account's Saved Messages
+(sent there, forwarded into the chat without the "Forwarded from" header, the copy deleted),
+which held 1000 posts an hour where plain sends drew `FLOOD_WAIT` at 100–300. The gateway does
+not pace anything: space the posts yourself and stop for `retry_after_ms` on `flood_wait`.
+
+```python
+from telapi_python.api.messages import relay_message
+from telapi_python.models import ErrorResponse, RelayMessageRequest
+
+res = relay_message.sync(
+    client=account,
+    body=RelayMessageRequest(
+        chat_id=-1001234567890,
+        text="Платье, 1200 ₽",
+        attachments=[photo.attachment],  # up to 10 make an album
+        ref="product-1042",  # a repeat never posts twice
+    ),
+)
+if isinstance(res, ErrorResponse):
+    ...  # the same codes as send_message
+elif res.saved_messages_left:
+    ...  # the copy could not be deleted from Saved Messages: delete it later
+```
 
 ### Forward
 
