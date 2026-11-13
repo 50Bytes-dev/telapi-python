@@ -1,0 +1,334 @@
+from http import HTTPStatus
+from typing import Any
+
+import httpx
+
+from ... import errors
+from ...client import AuthenticatedClient, Client
+from ...models.error_response import ErrorResponse
+from ...models.send_message_request import SendMessageRequest
+from ...models.send_message_response import SendMessageResponse
+from ...types import Response
+
+
+def _get_kwargs(
+    *,
+    body: SendMessageRequest,
+) -> dict[str, Any]:
+    headers: dict[str, Any] = {}
+
+    _kwargs: dict[str, Any] = {
+        "method": "post",
+        "url": "/messages",
+    }
+
+    _kwargs["json"] = body.to_dict()
+
+    headers["Content-Type"] = "application/json"
+
+    _kwargs["headers"] = headers
+    return _kwargs
+
+
+def _parse_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> ErrorResponse | SendMessageResponse | None:
+    if response.status_code == 200:
+        response_200 = SendMessageResponse.from_dict(response.json())
+
+        return response_200
+
+    if response.status_code == 400:
+        response_400 = ErrorResponse.from_dict(response.json())
+
+        return response_400
+
+    if response.status_code == 401:
+        response_401 = ErrorResponse.from_dict(response.json())
+
+        return response_401
+
+    if response.status_code == 403:
+        response_403 = ErrorResponse.from_dict(response.json())
+
+        return response_403
+
+    if response.status_code == 404:
+        response_404 = ErrorResponse.from_dict(response.json())
+
+        return response_404
+
+    if response.status_code == 409:
+        response_409 = ErrorResponse.from_dict(response.json())
+
+        return response_409
+
+    if response.status_code == 413:
+        response_413 = ErrorResponse.from_dict(response.json())
+
+        return response_413
+
+    if response.status_code == 422:
+        response_422 = ErrorResponse.from_dict(response.json())
+
+        return response_422
+
+    if response.status_code == 429:
+        response_429 = ErrorResponse.from_dict(response.json())
+
+        return response_429
+
+    if response.status_code == 500:
+        response_500 = ErrorResponse.from_dict(response.json())
+
+        return response_500
+
+    if response.status_code == 503:
+        response_503 = ErrorResponse.from_dict(response.json())
+
+        return response_503
+
+    if response.status_code == 504:
+        response_504 = ErrorResponse.from_dict(response.json())
+
+        return response_504
+
+    if response.status_code >= 400:
+        # telapi-python: every error of the gateway is the ErrorResponse envelope, also on a status the schema does
+        # not list for this call.
+        try:
+            error_body = response.json()
+        except ValueError:
+            error_body = None
+        if (
+            isinstance(error_body, dict)
+            and error_body.get("success") is False
+            and isinstance(error_body.get("code"), str)
+        ):
+            return ErrorResponse.from_dict(error_body)
+
+    if client.raise_on_unexpected_status:
+        raise errors.UnexpectedStatus(response.status_code, response.content)
+    else:
+        return None
+
+
+def _build_response(
+    *, client: AuthenticatedClient | Client, response: httpx.Response
+) -> Response[ErrorResponse | SendMessageResponse]:
+    return Response(
+        status_code=HTTPStatus(response.status_code),
+        content=response.content,
+        headers=response.headers,
+        parsed=_parse_response(client=client, response=response),
+    )
+
+
+def sync_detailed(
+    *,
+    client: AuthenticatedClient,
+    body: SendMessageRequest,
+) -> Response[ErrorResponse | SendMessageResponse]:
+    r"""Send a message
+
+     Sends text, or up to 10 attachments with the text as the caption of
+    the first (2 to 10 make an album; Telegram decides which mixes it
+    takes). Address it by `chatId`, `phone` or `username` (exactly
+    one). Text is at most 4096 UTF-16 units; a caption at most 1024
+    (4096 for a Premium user); over is `message_rejected` without
+    calling Telegram, never a split. Give a `ref` to make the send safe
+    to repeat: see \"Sends\" above.
+
+    Within one request the gateway makes the send at most twice, both
+    times with the same Telegram `random_id`, and the second time only
+    when the first surely did not reach Telegram or got no answer; then
+    `504 timeout` (it may have gone out) or `503 not_connected`
+    (nothing went out). When the first attempt may have gone out, a
+    refusal of the second is answered `504 timeout` too, with its
+    `upstreamCode` (and `pause` when the user got paused). A `ref` stays
+    bound to its chat once used, even when nothing went out: repeating
+    it sends with the same `random_id`. A `ref` is UTF-8 without
+    control characters.
+
+    `duplicate: true` means Telegram already has this send: a send with
+    the same `ref` went out before (its ids are answered when they are
+    known), or this request's first attempt did. When Telegram's answer
+    does not carry the ids, `messageIds` is empty and `messageId` is
+    absent.
+
+    Args:
+        body (SendMessageRequest): Exactly one of `chatId`, `phone` and `username`; `text`,
+            `attachments` or both.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[ErrorResponse | SendMessageResponse]
+    """
+
+    kwargs = _get_kwargs(
+        body=body,
+    )
+
+    response = client.get_httpx_client().request(
+        **kwargs,
+    )
+
+    return _build_response(client=client, response=response)
+
+
+def sync(
+    *,
+    client: AuthenticatedClient,
+    body: SendMessageRequest,
+) -> ErrorResponse | SendMessageResponse | None:
+    r"""Send a message
+
+     Sends text, or up to 10 attachments with the text as the caption of
+    the first (2 to 10 make an album; Telegram decides which mixes it
+    takes). Address it by `chatId`, `phone` or `username` (exactly
+    one). Text is at most 4096 UTF-16 units; a caption at most 1024
+    (4096 for a Premium user); over is `message_rejected` without
+    calling Telegram, never a split. Give a `ref` to make the send safe
+    to repeat: see \"Sends\" above.
+
+    Within one request the gateway makes the send at most twice, both
+    times with the same Telegram `random_id`, and the second time only
+    when the first surely did not reach Telegram or got no answer; then
+    `504 timeout` (it may have gone out) or `503 not_connected`
+    (nothing went out). When the first attempt may have gone out, a
+    refusal of the second is answered `504 timeout` too, with its
+    `upstreamCode` (and `pause` when the user got paused). A `ref` stays
+    bound to its chat once used, even when nothing went out: repeating
+    it sends with the same `random_id`. A `ref` is UTF-8 without
+    control characters.
+
+    `duplicate: true` means Telegram already has this send: a send with
+    the same `ref` went out before (its ids are answered when they are
+    known), or this request's first attempt did. When Telegram's answer
+    does not carry the ids, `messageIds` is empty and `messageId` is
+    absent.
+
+    Args:
+        body (SendMessageRequest): Exactly one of `chatId`, `phone` and `username`; `text`,
+            `attachments` or both.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        ErrorResponse | SendMessageResponse
+    """
+
+    return sync_detailed(
+        client=client,
+        body=body,
+    ).parsed
+
+
+async def asyncio_detailed(
+    *,
+    client: AuthenticatedClient,
+    body: SendMessageRequest,
+) -> Response[ErrorResponse | SendMessageResponse]:
+    r"""Send a message
+
+     Sends text, or up to 10 attachments with the text as the caption of
+    the first (2 to 10 make an album; Telegram decides which mixes it
+    takes). Address it by `chatId`, `phone` or `username` (exactly
+    one). Text is at most 4096 UTF-16 units; a caption at most 1024
+    (4096 for a Premium user); over is `message_rejected` without
+    calling Telegram, never a split. Give a `ref` to make the send safe
+    to repeat: see \"Sends\" above.
+
+    Within one request the gateway makes the send at most twice, both
+    times with the same Telegram `random_id`, and the second time only
+    when the first surely did not reach Telegram or got no answer; then
+    `504 timeout` (it may have gone out) or `503 not_connected`
+    (nothing went out). When the first attempt may have gone out, a
+    refusal of the second is answered `504 timeout` too, with its
+    `upstreamCode` (and `pause` when the user got paused). A `ref` stays
+    bound to its chat once used, even when nothing went out: repeating
+    it sends with the same `random_id`. A `ref` is UTF-8 without
+    control characters.
+
+    `duplicate: true` means Telegram already has this send: a send with
+    the same `ref` went out before (its ids are answered when they are
+    known), or this request's first attempt did. When Telegram's answer
+    does not carry the ids, `messageIds` is empty and `messageId` is
+    absent.
+
+    Args:
+        body (SendMessageRequest): Exactly one of `chatId`, `phone` and `username`; `text`,
+            `attachments` or both.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        Response[ErrorResponse | SendMessageResponse]
+    """
+
+    kwargs = _get_kwargs(
+        body=body,
+    )
+
+    response = await client.get_async_httpx_client().request(**kwargs)
+
+    return _build_response(client=client, response=response)
+
+
+async def asyncio(
+    *,
+    client: AuthenticatedClient,
+    body: SendMessageRequest,
+) -> ErrorResponse | SendMessageResponse | None:
+    r"""Send a message
+
+     Sends text, or up to 10 attachments with the text as the caption of
+    the first (2 to 10 make an album; Telegram decides which mixes it
+    takes). Address it by `chatId`, `phone` or `username` (exactly
+    one). Text is at most 4096 UTF-16 units; a caption at most 1024
+    (4096 for a Premium user); over is `message_rejected` without
+    calling Telegram, never a split. Give a `ref` to make the send safe
+    to repeat: see \"Sends\" above.
+
+    Within one request the gateway makes the send at most twice, both
+    times with the same Telegram `random_id`, and the second time only
+    when the first surely did not reach Telegram or got no answer; then
+    `504 timeout` (it may have gone out) or `503 not_connected`
+    (nothing went out). When the first attempt may have gone out, a
+    refusal of the second is answered `504 timeout` too, with its
+    `upstreamCode` (and `pause` when the user got paused). A `ref` stays
+    bound to its chat once used, even when nothing went out: repeating
+    it sends with the same `random_id`. A `ref` is UTF-8 without
+    control characters.
+
+    `duplicate: true` means Telegram already has this send: a send with
+    the same `ref` went out before (its ids are answered when they are
+    known), or this request's first attempt did. When Telegram's answer
+    does not carry the ids, `messageIds` is empty and `messageId` is
+    absent.
+
+    Args:
+        body (SendMessageRequest): Exactly one of `chatId`, `phone` and `username`; `text`,
+            `attachments` or both.
+
+    Raises:
+        errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
+        httpx.TimeoutException: If the request takes longer than Client.timeout.
+
+    Returns:
+        ErrorResponse | SendMessageResponse
+    """
+
+    return (
+        await asyncio_detailed(
+            client=client,
+            body=body,
+        )
+    ).parsed
