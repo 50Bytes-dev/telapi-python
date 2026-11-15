@@ -22,7 +22,7 @@ class CreateAccountRequest:
         events (list[EventType] | Unset):
         proxy (str | Unset): `socks5://` or `socks5h://user:pass@host:port`, `http://…`, `mtproxy://secret@host:port`,
             or a Telegram proxy link (`tg://proxy`, `tg://socks`, `https://t.me/proxy`, `https://t.me/socks`); absent or ""
-            = direct
+            = none of its own, so `TELAPI_DEFAULT_PROXY` when the gateway sets one, direct otherwise
     """
 
     name: str

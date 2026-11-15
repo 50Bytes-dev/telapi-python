@@ -18,6 +18,7 @@ def _get_kwargs(
     limit: int | Unset = 50,
     cursor: str | Unset = UNSET,
     archived: bool | Unset = False,
+    ids: list[int] | Unset = UNSET,
 ) -> dict[str, Any]:
 
     params: dict[str, Any] = {}
@@ -38,6 +39,12 @@ def _get_kwargs(
     params["cursor"] = cursor
 
     params["archived"] = archived
+
+    json_ids: list[int] | Unset = UNSET
+    if not isinstance(ids, Unset):
+        json_ids = ids
+
+    params["ids"] = json_ids
 
     params = {k: v for k, v in params.items() if v is not UNSET and v is not None}
 
@@ -137,6 +144,7 @@ def sync_detailed(
     limit: int | Unset = 50,
     cursor: str | Unset = UNSET,
     archived: bool | Unset = False,
+    ids: list[int] | Unset = UNSET,
 ) -> Response[ChatListResponse | ErrorResponse]:
     """List the chats
 
@@ -165,12 +173,36 @@ def sync_detailed(
     and no `archived`. Telegram counts it against the account's lookup
     limits: it is refused while the Telegram user is paused.
 
+    With `ids` (1 to 100 distinct chat ids; it takes no `q`, `cursor`,
+    `archived`, `type` or `limit`), the answer is instead those chats,
+    as the list shows them, in the order of `ids`, without pages, and
+    `missing`, always present: the chats it cannot answer, in the same
+    order. A chat the account never saw is missing (`peer_not_found`)
+    without a call; the others take one `messages.getPeerDialogs`
+    together, never one call per chat. A chat Telegram leaves out of
+    its answer is missing (`peer_not_found`); one it returns without a
+    dialog (a user never written to) has its counters at zero. When
+    Telegram refuses the whole call for one chat it no longer shows the
+    account, the chats' objects are read with at most one call per
+    kind (`users.getUsers`, `messages.getChats`,
+    `channels.getChannels`): a chat the account left or was banned
+    from comes from its object without its dialog row; the others get
+    theirs from a second `messages.getPeerDialogs` (or come from their
+    objects when none could be set apart or that call is refused too);
+    a kind whose read Telegram refuses as a whole is missing with that
+    refusal's `code` and `upstreamCode`. The kind is not split into
+    smaller reads, so one refused chat can hide the others of its kind
+    in that answer; ask for a missing chat alone to tell whether it is
+    the refused one. At most five calls; a wait, a
+    timeout or any other failure answers the whole request.
+
     Args:
         type_ (list[ChatTypeFilter] | Unset):
         q (str | Unset):
         limit (int | Unset):  Default: 50.
         cursor (str | Unset):
         archived (bool | Unset):  Default: False.
+        ids (list[int] | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -186,6 +218,7 @@ def sync_detailed(
         limit=limit,
         cursor=cursor,
         archived=archived,
+        ids=ids,
     )
 
     response = client.get_httpx_client().request(
@@ -203,6 +236,7 @@ def sync(
     limit: int | Unset = 50,
     cursor: str | Unset = UNSET,
     archived: bool | Unset = False,
+    ids: list[int] | Unset = UNSET,
 ) -> ChatListResponse | ErrorResponse | None:
     """List the chats
 
@@ -231,12 +265,36 @@ def sync(
     and no `archived`. Telegram counts it against the account's lookup
     limits: it is refused while the Telegram user is paused.
 
+    With `ids` (1 to 100 distinct chat ids; it takes no `q`, `cursor`,
+    `archived`, `type` or `limit`), the answer is instead those chats,
+    as the list shows them, in the order of `ids`, without pages, and
+    `missing`, always present: the chats it cannot answer, in the same
+    order. A chat the account never saw is missing (`peer_not_found`)
+    without a call; the others take one `messages.getPeerDialogs`
+    together, never one call per chat. A chat Telegram leaves out of
+    its answer is missing (`peer_not_found`); one it returns without a
+    dialog (a user never written to) has its counters at zero. When
+    Telegram refuses the whole call for one chat it no longer shows the
+    account, the chats' objects are read with at most one call per
+    kind (`users.getUsers`, `messages.getChats`,
+    `channels.getChannels`): a chat the account left or was banned
+    from comes from its object without its dialog row; the others get
+    theirs from a second `messages.getPeerDialogs` (or come from their
+    objects when none could be set apart or that call is refused too);
+    a kind whose read Telegram refuses as a whole is missing with that
+    refusal's `code` and `upstreamCode`. The kind is not split into
+    smaller reads, so one refused chat can hide the others of its kind
+    in that answer; ask for a missing chat alone to tell whether it is
+    the refused one. At most five calls; a wait, a
+    timeout or any other failure answers the whole request.
+
     Args:
         type_ (list[ChatTypeFilter] | Unset):
         q (str | Unset):
         limit (int | Unset):  Default: 50.
         cursor (str | Unset):
         archived (bool | Unset):  Default: False.
+        ids (list[int] | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -253,6 +311,7 @@ def sync(
         limit=limit,
         cursor=cursor,
         archived=archived,
+        ids=ids,
     ).parsed
 
 
@@ -264,6 +323,7 @@ async def asyncio_detailed(
     limit: int | Unset = 50,
     cursor: str | Unset = UNSET,
     archived: bool | Unset = False,
+    ids: list[int] | Unset = UNSET,
 ) -> Response[ChatListResponse | ErrorResponse]:
     """List the chats
 
@@ -292,12 +352,36 @@ async def asyncio_detailed(
     and no `archived`. Telegram counts it against the account's lookup
     limits: it is refused while the Telegram user is paused.
 
+    With `ids` (1 to 100 distinct chat ids; it takes no `q`, `cursor`,
+    `archived`, `type` or `limit`), the answer is instead those chats,
+    as the list shows them, in the order of `ids`, without pages, and
+    `missing`, always present: the chats it cannot answer, in the same
+    order. A chat the account never saw is missing (`peer_not_found`)
+    without a call; the others take one `messages.getPeerDialogs`
+    together, never one call per chat. A chat Telegram leaves out of
+    its answer is missing (`peer_not_found`); one it returns without a
+    dialog (a user never written to) has its counters at zero. When
+    Telegram refuses the whole call for one chat it no longer shows the
+    account, the chats' objects are read with at most one call per
+    kind (`users.getUsers`, `messages.getChats`,
+    `channels.getChannels`): a chat the account left or was banned
+    from comes from its object without its dialog row; the others get
+    theirs from a second `messages.getPeerDialogs` (or come from their
+    objects when none could be set apart or that call is refused too);
+    a kind whose read Telegram refuses as a whole is missing with that
+    refusal's `code` and `upstreamCode`. The kind is not split into
+    smaller reads, so one refused chat can hide the others of its kind
+    in that answer; ask for a missing chat alone to tell whether it is
+    the refused one. At most five calls; a wait, a
+    timeout or any other failure answers the whole request.
+
     Args:
         type_ (list[ChatTypeFilter] | Unset):
         q (str | Unset):
         limit (int | Unset):  Default: 50.
         cursor (str | Unset):
         archived (bool | Unset):  Default: False.
+        ids (list[int] | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -313,6 +397,7 @@ async def asyncio_detailed(
         limit=limit,
         cursor=cursor,
         archived=archived,
+        ids=ids,
     )
 
     response = await client.get_async_httpx_client().request(**kwargs)
@@ -328,6 +413,7 @@ async def asyncio(
     limit: int | Unset = 50,
     cursor: str | Unset = UNSET,
     archived: bool | Unset = False,
+    ids: list[int] | Unset = UNSET,
 ) -> ChatListResponse | ErrorResponse | None:
     """List the chats
 
@@ -356,12 +442,36 @@ async def asyncio(
     and no `archived`. Telegram counts it against the account's lookup
     limits: it is refused while the Telegram user is paused.
 
+    With `ids` (1 to 100 distinct chat ids; it takes no `q`, `cursor`,
+    `archived`, `type` or `limit`), the answer is instead those chats,
+    as the list shows them, in the order of `ids`, without pages, and
+    `missing`, always present: the chats it cannot answer, in the same
+    order. A chat the account never saw is missing (`peer_not_found`)
+    without a call; the others take one `messages.getPeerDialogs`
+    together, never one call per chat. A chat Telegram leaves out of
+    its answer is missing (`peer_not_found`); one it returns without a
+    dialog (a user never written to) has its counters at zero. When
+    Telegram refuses the whole call for one chat it no longer shows the
+    account, the chats' objects are read with at most one call per
+    kind (`users.getUsers`, `messages.getChats`,
+    `channels.getChannels`): a chat the account left or was banned
+    from comes from its object without its dialog row; the others get
+    theirs from a second `messages.getPeerDialogs` (or come from their
+    objects when none could be set apart or that call is refused too);
+    a kind whose read Telegram refuses as a whole is missing with that
+    refusal's `code` and `upstreamCode`. The kind is not split into
+    smaller reads, so one refused chat can hide the others of its kind
+    in that answer; ask for a missing chat alone to tell whether it is
+    the refused one. At most five calls; a wait, a
+    timeout or any other failure answers the whole request.
+
     Args:
         type_ (list[ChatTypeFilter] | Unset):
         q (str | Unset):
         limit (int | Unset):  Default: 50.
         cursor (str | Unset):
         archived (bool | Unset):  Default: False.
+        ids (list[int] | Unset):
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -379,5 +489,6 @@ async def asyncio(
             limit=limit,
             cursor=cursor,
             archived=archived,
+            ids=ids,
         )
     ).parsed

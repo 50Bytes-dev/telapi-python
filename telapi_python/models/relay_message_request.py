@@ -33,6 +33,14 @@ class RelayMessageRequest:
         silent (bool | Unset): No notification sound
         ref (str | Unset): Your idempotency key (up to 128 bytes); the same `ref` never posts twice Example:
             product-1042.
+        topic_id (int | Unset): As on `POST /messages`: the forum topic the forward goes into (1, General, is no topic).
+            The copy in Saved Messages has none.
+        monoforum_peer_id (int | Unset): As on `POST /messages`: the user's thread of the channel's direct messages the
+            forward goes into.
+        send_as (int | Unset): As on `POST /messages`: the chat the forward is sent as. The copy in Saved Messages is
+            the account's own.
+        allow_paid_stars (int | Unset): As on `POST /messages`: the ceiling for the forward into the chat, price ×
+            messages (an album of 3 is 3). The copy in Saved Messages is free.
     """
 
     chat_id: int | Unset = UNSET
@@ -43,6 +51,10 @@ class RelayMessageRequest:
     attachments: list[str] | Unset = UNSET
     silent: bool | Unset = UNSET
     ref: str | Unset = UNSET
+    topic_id: int | Unset = UNSET
+    monoforum_peer_id: int | Unset = UNSET
+    send_as: int | Unset = UNSET
+    allow_paid_stars: int | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -66,6 +78,14 @@ class RelayMessageRequest:
 
         ref = self.ref
 
+        topic_id = self.topic_id
+
+        monoforum_peer_id = self.monoforum_peer_id
+
+        send_as = self.send_as
+
+        allow_paid_stars = self.allow_paid_stars
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update({})
@@ -85,6 +105,14 @@ class RelayMessageRequest:
             field_dict["silent"] = silent
         if ref is not UNSET:
             field_dict["ref"] = ref
+        if topic_id is not UNSET:
+            field_dict["topicId"] = topic_id
+        if monoforum_peer_id is not UNSET:
+            field_dict["monoforumPeerId"] = monoforum_peer_id
+        if send_as is not UNSET:
+            field_dict["sendAs"] = send_as
+        if allow_paid_stars is not UNSET:
+            field_dict["allowPaidStars"] = allow_paid_stars
 
         return field_dict
 
@@ -112,6 +140,14 @@ class RelayMessageRequest:
 
         ref = d.pop("ref", UNSET)
 
+        topic_id = d.pop("topicId", UNSET)
+
+        monoforum_peer_id = d.pop("monoforumPeerId", UNSET)
+
+        send_as = d.pop("sendAs", UNSET)
+
+        allow_paid_stars = d.pop("allowPaidStars", UNSET)
+
         relay_message_request = cls(
             chat_id=chat_id,
             phone=phone,
@@ -121,6 +157,10 @@ class RelayMessageRequest:
             attachments=attachments,
             silent=silent,
             ref=ref,
+            topic_id=topic_id,
+            monoforum_peer_id=monoforum_peer_id,
+            send_as=send_as,
+            allow_paid_stars=allow_paid_stars,
         )
 
         relay_message_request.additional_properties = d

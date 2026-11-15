@@ -30,13 +30,22 @@ class ErrorResponse:
         upstream_code (str | Unset): Telegram's RPC error type without its number (`FLOOD_WAIT_37` is `FLOOD_WAIT`)
             Example: FLOOD_WAIT.
         pause (Pause | Unset): The pause of the Telegram user. `reason`: `spam` (PEER_FLOOD,
-            USER_RESTRICTED), `flood` (a long FLOOD_WAIT, or the third on sends
+            USER_RESTRICTED, or USER_BANNED_IN_CHANNEL in 3 different chats
+            within 24 hours), `flood` (a long FLOOD_WAIT, or the third on sends
             within 10 minutes), `frozen` (FROZEN_*: only Telegram's appeal lifts
             it); new reasons may come. Lifted only by `POST /session/resume`.
         step (str | Unset): `wrong_login_step`: the step the login is at Example: password.
         attempts_left (int | Unset): `invalid_code`, `invalid_password`: tries left before the login fails Example: 4.
         rejected_attachments (list[int] | Unset): `attachment_rejected`: the indexes of the unusable attachments
             Example: [1].
+        required_stars (int | Unset): `payment_required`: the Telegram Stars Telegram asked for
+            (`ALLOW_PAYMENT_REQUIRED_<n>`), unchanged. Telegram's docs call it the price of one message; for a call of
+            several messages it may be the call's total, so read it with `messageCount`. Absent when Telegram named no
+            number. Example: 25.
+        message_count (int | Unset): `payment_required` on a send: how many messages the refused call carried Example:
+            1.
+        migrated_to_chat_id (int | Unset): `chat_migrated`: the chat id of the supergroup the basic group became; absent
+            when Telegram did not name it. This account may not be a member there. Example: -1001234567890.
         saved_messages_left (list[int] | Unset): `POST /messages/relay`: the ids of the copy left in Saved Messages when
             deleting it failed
     """
@@ -50,6 +59,9 @@ class ErrorResponse:
     step: str | Unset = UNSET
     attempts_left: int | Unset = UNSET
     rejected_attachments: list[int] | Unset = UNSET
+    required_stars: int | Unset = UNSET
+    message_count: int | Unset = UNSET
+    migrated_to_chat_id: int | Unset = UNSET
     saved_messages_left: list[int] | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
@@ -76,6 +88,12 @@ class ErrorResponse:
         if not isinstance(self.rejected_attachments, Unset):
             rejected_attachments = self.rejected_attachments
 
+        required_stars = self.required_stars
+
+        message_count = self.message_count
+
+        migrated_to_chat_id = self.migrated_to_chat_id
+
         saved_messages_left: list[int] | Unset = UNSET
         if not isinstance(self.saved_messages_left, Unset):
             saved_messages_left = self.saved_messages_left
@@ -101,6 +119,12 @@ class ErrorResponse:
             field_dict["attemptsLeft"] = attempts_left
         if rejected_attachments is not UNSET:
             field_dict["rejectedAttachments"] = rejected_attachments
+        if required_stars is not UNSET:
+            field_dict["requiredStars"] = required_stars
+        if message_count is not UNSET:
+            field_dict["messageCount"] = message_count
+        if migrated_to_chat_id is not UNSET:
+            field_dict["migratedToChatId"] = migrated_to_chat_id
         if saved_messages_left is not UNSET:
             field_dict["savedMessagesLeft"] = saved_messages_left
 
@@ -134,6 +158,12 @@ class ErrorResponse:
 
         rejected_attachments = cast(list[int], d.pop("rejectedAttachments", UNSET))
 
+        required_stars = d.pop("requiredStars", UNSET)
+
+        message_count = d.pop("messageCount", UNSET)
+
+        migrated_to_chat_id = d.pop("migratedToChatId", UNSET)
+
         saved_messages_left = cast(list[int], d.pop("savedMessagesLeft", UNSET))
 
         error_response = cls(
@@ -146,6 +176,9 @@ class ErrorResponse:
             step=step,
             attempts_left=attempts_left,
             rejected_attachments=rejected_attachments,
+            required_stars=required_stars,
+            message_count=message_count,
+            migrated_to_chat_id=migrated_to_chat_id,
             saved_messages_left=saved_messages_left,
         )
 

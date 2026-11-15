@@ -23,6 +23,12 @@ class ForwardMessagesRequest:
         schedule_date (int | Unset): Unix time in seconds; the copies go into the scheduled queue and the answer's ids
             are ids there. 0 or absent forwards now.
         ref (str | Unset): Your idempotency key, as on `POST /messages`
+        topic_id (int | Unset): As on `POST /messages`: the forum topic of this chat the messages go into; 1 (General)
+            is no topic.
+        monoforum_peer_id (int | Unset): As on `POST /messages`: the user's thread of this chat's direct messages.
+        send_as (int | Unset): As on `POST /messages`
+        allow_paid_stars (int | Unset): As on `POST /messages`: the ceiling for the whole forward, price × the number of
+            `messageIds`.
     """
 
     from_chat_id: int
@@ -32,6 +38,10 @@ class ForwardMessagesRequest:
     silent: bool | Unset = UNSET
     schedule_date: int | Unset = UNSET
     ref: str | Unset = UNSET
+    topic_id: int | Unset = UNSET
+    monoforum_peer_id: int | Unset = UNSET
+    send_as: int | Unset = UNSET
+    allow_paid_stars: int | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -48,6 +58,14 @@ class ForwardMessagesRequest:
         schedule_date = self.schedule_date
 
         ref = self.ref
+
+        topic_id = self.topic_id
+
+        monoforum_peer_id = self.monoforum_peer_id
+
+        send_as = self.send_as
+
+        allow_paid_stars = self.allow_paid_stars
 
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
@@ -67,6 +85,14 @@ class ForwardMessagesRequest:
             field_dict["scheduleDate"] = schedule_date
         if ref is not UNSET:
             field_dict["ref"] = ref
+        if topic_id is not UNSET:
+            field_dict["topicId"] = topic_id
+        if monoforum_peer_id is not UNSET:
+            field_dict["monoforumPeerId"] = monoforum_peer_id
+        if send_as is not UNSET:
+            field_dict["sendAs"] = send_as
+        if allow_paid_stars is not UNSET:
+            field_dict["allowPaidStars"] = allow_paid_stars
 
         return field_dict
 
@@ -87,6 +113,14 @@ class ForwardMessagesRequest:
 
         ref = d.pop("ref", UNSET)
 
+        topic_id = d.pop("topicId", UNSET)
+
+        monoforum_peer_id = d.pop("monoforumPeerId", UNSET)
+
+        send_as = d.pop("sendAs", UNSET)
+
+        allow_paid_stars = d.pop("allowPaidStars", UNSET)
+
         forward_messages_request = cls(
             from_chat_id=from_chat_id,
             message_ids=message_ids,
@@ -95,6 +129,10 @@ class ForwardMessagesRequest:
             silent=silent,
             schedule_date=schedule_date,
             ref=ref,
+            topic_id=topic_id,
+            monoforum_peer_id=monoforum_peer_id,
+            send_as=send_as,
+            allow_paid_stars=allow_paid_stars,
         )
 
         forward_messages_request.additional_properties = d

@@ -26,14 +26,16 @@ class Account:
         name (str): Also shown in Telegram's device list after the login Example: sales-1.
         webhook_url (str): "" = no webhook Example: https://example.com/telegram/events.
         events (list[str]): The subscription (event types; `All` = every one) Example: ['Message', 'LoginUpdated'].
-        proxy (str): The proxy of the account's Telegram traffic with its password or secret masked; "" = direct
-            Example: socks5://user:***@10.0.0.5:1080.
+        proxy (str): The proxy of the account's Telegram traffic with its password or secret masked; "" = none of its
+            own (`TELAPI_DEFAULT_PROXY` when the gateway sets one, direct otherwise) Example:
+            socks5://user:***@10.0.0.5:1080.
         logged_in (bool): A Telegram login is stored
         connected (bool): The Telegram client is connected
         created_at (int): Unix time in seconds Example: 1794500000.
         tg_user (TgUser | Unset): The Telegram user the account is logged into
         pause (Pause | Unset): The pause of the Telegram user. `reason`: `spam` (PEER_FLOOD,
-            USER_RESTRICTED), `flood` (a long FLOOD_WAIT, or the third on sends
+            USER_RESTRICTED, or USER_BANNED_IN_CHANNEL in 3 different chats
+            within 24 hours), `flood` (a long FLOOD_WAIT, or the third on sends
             within 10 minutes), `frozen` (FROZEN_*: only Telegram's appeal lifts
             it); new reasons may come. Lifted only by `POST /session/resume`.
     """

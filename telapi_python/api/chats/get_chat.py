@@ -124,9 +124,14 @@ def sync_detailed(
      The chat's dialog row (`messages.getPeerDialogs`) with its full
     information (`users.getFullUser`, `messages.getFullChat` or
     `channels.getFullChannel`): `about`, `membersCount`, `linkedChatId`,
-    `slowmodeSeconds`, and `blocked` for a user or bot. A user the
-    account has no dialog with has the row's counters at zero. A chat id
-    the account never saw is `404 peer_not_found` without a call.
+    `slowmodeSeconds`, `slowmodeNextSendDate`, `migratedFromChatId`,
+    `defaultSendAs`, `boostsApplied` and `boostsUnrestrict` for a group
+    or channel; `blocked`, `noforwards`, `noforwardsByMe` and
+    `noforwardsByPeer` for a user or bot. In the full view
+    `sendPaidMessagesStars` is what this account pays, and `canWrite`
+    counts the account's boosts. A user the account has no dialog with
+    has the row's counters at zero. A chat id the account never saw is
+    `404 peer_not_found` without a call.
 
     Args:
         chat_id (int):
@@ -160,9 +165,14 @@ def sync(
      The chat's dialog row (`messages.getPeerDialogs`) with its full
     information (`users.getFullUser`, `messages.getFullChat` or
     `channels.getFullChannel`): `about`, `membersCount`, `linkedChatId`,
-    `slowmodeSeconds`, and `blocked` for a user or bot. A user the
-    account has no dialog with has the row's counters at zero. A chat id
-    the account never saw is `404 peer_not_found` without a call.
+    `slowmodeSeconds`, `slowmodeNextSendDate`, `migratedFromChatId`,
+    `defaultSendAs`, `boostsApplied` and `boostsUnrestrict` for a group
+    or channel; `blocked`, `noforwards`, `noforwardsByMe` and
+    `noforwardsByPeer` for a user or bot. In the full view
+    `sendPaidMessagesStars` is what this account pays, and `canWrite`
+    counts the account's boosts. A user the account has no dialog with
+    has the row's counters at zero. A chat id the account never saw is
+    `404 peer_not_found` without a call.
 
     Args:
         chat_id (int):
@@ -191,9 +201,14 @@ async def asyncio_detailed(
      The chat's dialog row (`messages.getPeerDialogs`) with its full
     information (`users.getFullUser`, `messages.getFullChat` or
     `channels.getFullChannel`): `about`, `membersCount`, `linkedChatId`,
-    `slowmodeSeconds`, and `blocked` for a user or bot. A user the
-    account has no dialog with has the row's counters at zero. A chat id
-    the account never saw is `404 peer_not_found` without a call.
+    `slowmodeSeconds`, `slowmodeNextSendDate`, `migratedFromChatId`,
+    `defaultSendAs`, `boostsApplied` and `boostsUnrestrict` for a group
+    or channel; `blocked`, `noforwards`, `noforwardsByMe` and
+    `noforwardsByPeer` for a user or bot. In the full view
+    `sendPaidMessagesStars` is what this account pays, and `canWrite`
+    counts the account's boosts. A user the account has no dialog with
+    has the row's counters at zero. A chat id the account never saw is
+    `404 peer_not_found` without a call.
 
     Args:
         chat_id (int):
@@ -225,9 +240,14 @@ async def asyncio(
      The chat's dialog row (`messages.getPeerDialogs`) with its full
     information (`users.getFullUser`, `messages.getFullChat` or
     `channels.getFullChannel`): `about`, `membersCount`, `linkedChatId`,
-    `slowmodeSeconds`, and `blocked` for a user or bot. A user the
-    account has no dialog with has the row's counters at zero. A chat id
-    the account never saw is `404 peer_not_found` without a call.
+    `slowmodeSeconds`, `slowmodeNextSendDate`, `migratedFromChatId`,
+    `defaultSendAs`, `boostsApplied` and `boostsUnrestrict` for a group
+    or channel; `blocked`, `noforwards`, `noforwardsByMe` and
+    `noforwardsByPeer` for a user or bot. In the full view
+    `sendPaidMessagesStars` is what this account pays, and `canWrite`
+    counts the account's boosts. A user the account has no dialog with
+    has the row's counters at zero. A chat id the account never saw is
+    `404 peer_not_found` without a call.
 
     Args:
         chat_id (int):

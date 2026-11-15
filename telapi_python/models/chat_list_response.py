@@ -10,6 +10,7 @@ from ..types import UNSET, Unset
 
 if TYPE_CHECKING:
     from ..models.chat import Chat
+    from ..models.missing_chat import MissingChat
 
 
 T = TypeVar("T", bound="ChatListResponse")
@@ -22,11 +23,13 @@ class ChatListResponse:
         success (bool):
         chats (list[Chat]):
         next_cursor (str | Unset): The cursor of the next page; absent on the last
+        missing (list[MissingChat] | Unset): With `ids` only, and then always present (empty when every chat was found)
     """
 
     success: bool
     chats: list[Chat]
     next_cursor: str | Unset = UNSET
+    missing: list[MissingChat] | Unset = UNSET
     additional_properties: dict[str, Any] = _attrs_field(init=False, factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
@@ -39,6 +42,13 @@ class ChatListResponse:
 
         next_cursor = self.next_cursor
 
+        missing: list[dict[str, Any]] | Unset = UNSET
+        if not isinstance(self.missing, Unset):
+            missing = []
+            for missing_item_data in self.missing:
+                missing_item = missing_item_data.to_dict()
+                missing.append(missing_item)
+
         field_dict: dict[str, Any] = {}
         field_dict.update(self.additional_properties)
         field_dict.update(
@@ -49,12 +59,15 @@ class ChatListResponse:
         )
         if next_cursor is not UNSET:
             field_dict["nextCursor"] = next_cursor
+        if missing is not UNSET:
+            field_dict["missing"] = missing
 
         return field_dict
 
     @classmethod
     def from_dict(cls: type[T], src_dict: Mapping[str, Any]) -> T:
         from ..models.chat import Chat
+        from ..models.missing_chat import MissingChat
 
         d = dict(src_dict)
         success = d.pop("success")
@@ -68,10 +81,20 @@ class ChatListResponse:
 
         next_cursor = d.pop("nextCursor", UNSET)
 
+        _missing = d.pop("missing", UNSET)
+        missing: list[MissingChat] | Unset = UNSET
+        if _missing is not UNSET:
+            missing = []
+            for missing_item_data in _missing:
+                missing_item = MissingChat.from_dict(missing_item_data)
+
+                missing.append(missing_item)
+
         chat_list_response = cls(
             success=success,
             chats=chats,
             next_cursor=next_cursor,
+            missing=missing,
         )
 
         chat_list_response.additional_properties = d

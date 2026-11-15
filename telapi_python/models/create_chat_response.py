@@ -22,19 +22,38 @@ class CreateChatResponse:
     Attributes:
         success (bool):
         chat (Chat): A chat. `type`: `user`, `bot`, `group` (basic group or supergroup),
-            `channel` (broadcast channel); new values may come. `about`,
-            `blocked`, `linkedChatId` and `slowmodeSeconds` come only with the
-            full view (`GET /chats/{chatId}`, `PATCH /chats/{chatId}`).
+            `channel` (broadcast channel); new values may come. The fields from
+            `about` on come only with the full view (`GET /chats/{chatId}`,
+            `PATCH /chats/{chatId}`); the traits before them come from the
+            chat's own object, so the list has them too. Boolean traits are
+            present only when true.
 
-            `canWrite` is what Telegram's objects show, not a promise: left,
-            removed, deactivated or migrated → `chat_closed`; a broadcast channel
-            without the right to post → `not_admin`; a group whose rights (for
-            all or for the account) ban sending, the account no admin →
-            `restricted`; a deleted account → `deleted_user`; a user the account
-            blocked → `blocked` (full view only); a user who takes messages only
-            from contacts and Premium users, while the account has no Premium,
-            is no mutual contact and has had no message from them →
-            `premium_required`.
+            `canWrite` is what Telegram's objects show, not a promise, by the
+            rules of Telegram's own apps, in this order. A basic group that
+            became a supergroup → `migrated` (with `migratedToChatId`); left,
+            removed or deleted → `chat_closed`. A supergroup or channel that
+            banned the account (`bannedRights.viewMessages`; a ban stays after
+            its `untilDate`) → `chat_closed`. A monoforum is never joined and is
+            writable unless its channel, in the same answer, no longer takes
+            direct messages → `chat_closed`. Left: a discussion group
+            (`hasLink`) takes comments without joining unless `joinToSend` is
+            on → `join_required`; anything else left → `chat_closed`. A
+            gigagroup takes messages from its creator and admins only, a
+            broadcast channel from its creator and admins with the right to
+            post → `not_admin`. In a supergroup the creator and admins write;
+            others are `restricted` while their own restriction lasts (until
+            `bannedRights.untilDate`) or the group's default rights restrict,
+            which stop holding for an account that boosted the group enough
+            (full view only: `boostsApplied` ≥ `boostsUnrestrict` > 0). Rights
+            restrict when they ban `sendMessages`, or `sendPlain` and every
+            media kind (`sendPhotos`, `sendVideos`, `sendRoundvideos`,
+            `sendAudios`, `sendVoices`, `sendDocs`, `sendStickers`, `sendGifs`,
+            `sendPolls`). A deleted account → `deleted_user`; a user the
+            account blocked → `blocked` (full view only); a user who takes
+            messages only from contacts and Premium users, while the account
+            has no Premium, is no mutual contact and has had no message from
+            them → `premium_required`. Paid messages and slow mode never change
+            `canWrite`. New reasons may come.
         results (list[AddMemberResult] | Unset): One result per `userIds` entry, in order, when `userIds` were given
     """
 

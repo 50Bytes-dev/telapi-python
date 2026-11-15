@@ -8,6 +8,7 @@ from .add_member_result import AddMemberResult
 from .add_members_request import AddMembersRequest
 from .add_members_response import AddMembersResponse
 from .chat import Chat
+from .chat_banned_rights import ChatBannedRights
 from .chat_list_response import ChatListResponse
 from .chat_response import ChatResponse
 from .chat_type_filter import ChatTypeFilter
@@ -64,6 +65,8 @@ from .messages_deleted_data import MessagesDeletedData
 from .messages_deleted_event import MessagesDeletedEvent
 from .messages_read_data import MessagesReadData
 from .messages_read_event import MessagesReadEvent
+from .missing_chat import MissingChat
+from .monoforum_thread import MonoforumThread
 from .new_chat_type import NewChatType
 from .parse_mode import ParseMode
 from .pause import Pause
@@ -76,6 +79,8 @@ from .relay_message_request import RelayMessageRequest
 from .relay_message_response import RelayMessageResponse
 from .resumed_data import ResumedData
 from .resumed_event import ResumedEvent
+from .send_as_list_response import SendAsListResponse
+from .send_as_peer import SendAsPeer
 from .send_message_request import SendMessageRequest
 from .send_message_response import SendMessageResponse
 from .send_typing_request import SendTypingRequest
@@ -88,6 +93,8 @@ from .submit_login_code_request import SubmitLoginCodeRequest
 from .submit_login_password_request import SubmitLoginPasswordRequest
 from .success_response import SuccessResponse
 from .tg_user import TgUser
+from .topic import Topic
+from .topic_list_response import TopicListResponse
 from .typing_action import TypingAction
 from .typing_data import TypingData
 from .typing_event import TypingEvent
@@ -113,6 +120,7 @@ __all__ = (
     "AddMembersRequest",
     "AddMembersResponse",
     "Chat",
+    "ChatBannedRights",
     "ChatListResponse",
     "ChatResponse",
     "ChatTypeFilter",
@@ -169,6 +177,8 @@ __all__ = (
     "MessageSender",
     "MessagesReadData",
     "MessagesReadEvent",
+    "MissingChat",
+    "MonoforumThread",
     "NewChatType",
     "ParseMode",
     "Pause",
@@ -181,6 +191,8 @@ __all__ = (
     "RelayMessageResponse",
     "ResumedData",
     "ResumedEvent",
+    "SendAsListResponse",
+    "SendAsPeer",
     "SendMessageRequest",
     "SendMessageResponse",
     "SendTypingRequest",
@@ -193,6 +205,8 @@ __all__ = (
     "SubmitLoginPasswordRequest",
     "SuccessResponse",
     "TgUser",
+    "Topic",
+    "TopicListResponse",
     "TypingAction",
     "TypingData",
     "TypingEvent",

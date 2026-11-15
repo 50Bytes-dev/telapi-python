@@ -2,8 +2,9 @@
 A client library for accessing [telapi](https://github.com/50Bytes-dev/telapi), the HTTP gateway for **Telegram user
 accounts** (real people's accounts, not bots): it logs into an account by QR code (with the cloud password) or by
 phone number and code, keeps the session, sends text, photos, albums, documents, audio and video, edits and deletes
-messages, reads history, lists and manages chats and their members, looks up users, and reports what happens in the
-account as signed webhooks. This package follows telapi's version (1.0.0).
+messages, reads history, lists and manages chats and their members, forum topics and a channel's direct messages,
+looks up users, and reports what happens in the account as signed webhooks. This package follows telapi's version
+(1.2.0).
 
 The package is generated from the gateway's OpenAPI schema (`static/api/spec.yml` in telapi; the gateway serves it at
 `/api/spec.yml`, with the Swagger UI at `/api/`). The full contract, with every code and when it comes, is
@@ -80,6 +81,8 @@ from 400, also on one the schema does not list for that call.
 | `api.chats.add_members` | `POST /chats/{chat_id}/members` |
 | `api.chats.remove_member` | `DELETE /chats/{chat_id}/members/{user_id}` |
 | `api.chats.set_member_role` | `PUT /chats/{chat_id}/members/{user_id}/role` |
+| `api.chats.list_topics` | `GET /chats/{chat_id}/topics` |
+| `api.chats.list_send_as` | `GET /chats/{chat_id}/send-as` |
 | `api.chats.get_history` | `GET /chats/{chat_id}/messages` |
 | `api.chats.download_media` | `GET /chats/{chat_id}/messages/{message_id}/media` |
 | `api.chats.mark_read` | `POST /chats/{chat_id}/read` |
@@ -224,6 +227,55 @@ res = forward_messages.sync(
 For Telegram's antispam a forward is a send: the same `flood_wait` and `paused` answers apply.
 Address a person by `phone` or `username` instead of `chat_id` until the account has seen the chat.
 
+### Topics, send-as and paid messages
+
+`send_message`, `relay_message` and `forward_messages` take the same target options: `topic_id` (a forum topic, 1 is
+General), `monoforum_peer_id` (for a channel's admin: the user's thread in the channel's direct messages), `send_as`
+(a chat from `list_send_as`, or the account's own id) and `allow_paid_stars` (the most Telegram Stars the call may
+spend on a recipient that charges for messages; absent never pays).
+
+```python
+from telapi_python.api.chats import list_send_as, list_topics
+from telapi_python.api.messages import send_message
+from telapi_python.models import ErrorResponse, SendMessageRequest
+from telapi_python.types import UNSET
+
+cursor = UNSET
+while True:  # follow next_cursor until it is absent: a page may hold fewer items than limit, even none
+    page = list_topics.sync(-1001234567890, client=account, cursor=cursor)
+    for topic in page.topics or []:  # a forum answers topics; a channel's direct messages answer threads
+        print(topic.topic_id, topic.title, "closed" if topic.closed else "")
+    if page.next_cursor is UNSET:
+        break
+    cursor = page.next_cursor
+
+senders = list_send_as.sync(-1001234567890, client=account).peers  # [] where Telegram has no send-as
+
+res = send_message.sync(
+    client=account,
+    body=SendMessageRequest(
+        chat_id=-1001234567890,
+        topic_id=42,
+        send_as=senders[0].chat_id,
+        text="Hi",
+        allow_paid_stars=30,
+    ),
+)
+if isinstance(res, ErrorResponse):
+    if res.code == "payment_required":
+        ...  # res.required_stars (Telegram's figure) for res.message_count messages: raise allow_paid_stars
+    elif res.code == "chat_migrated":
+        ...  # the basic group became the supergroup res.migrated_to_chat_id: send there
+    elif res.code in ("topic_closed", "topic_invalid", "topic_deleted"):
+        ...
+```
+
+Messages carry `topic_id` and `monoforum_peer_id`, in history and in the `Message` webhook alike. A `Chat` tells
+where these apply: `forum`, `monoforum`, `send_paid_messages_stars`, `slowmode_enabled`, `join_to_send`,
+`default_banned_rights` and `banned_rights` (`ChatBannedRights`), and `migrated_to_chat_id`; boolean traits are
+`UNSET` unless true. `can_write` with `cant_write_reason` (`migrated`, `chat_closed`, `join_required`, `not_admin`,
+`restricted`, …) is what Telegram's objects show, not a promise.
+
 ### Chats and history
 
 ```python
@@ -239,6 +291,11 @@ while True:
     if page.next_cursor is UNSET:
         break
     cursor = page.next_cursor
+
+# Known chats by id, without pages: those it cannot answer come in page.missing with their code
+page = list_chats.sync(client=account, ids=[-1001234567890, 777000])
+for missing in page.missing:
+    print("missing:", missing.chat_id, missing.code)
 
 history = get_history.sync(-1001234567890, client=account, limit=50)
 for m in history.messages:

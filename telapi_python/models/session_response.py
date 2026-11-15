@@ -30,7 +30,8 @@ class SessionResponse:
             `done` (`tgUser`; `Connected` follows), `failed` (`failure`). New
             steps may come.
         pause (Pause | Unset): The pause of the Telegram user. `reason`: `spam` (PEER_FLOOD,
-            USER_RESTRICTED), `flood` (a long FLOOD_WAIT, or the third on sends
+            USER_RESTRICTED, or USER_BANNED_IN_CHANNEL in 3 different chats
+            within 24 hours), `flood` (a long FLOOD_WAIT, or the third on sends
             within 10 minutes), `frozen` (FROZEN_*: only Telegram's appeal lifts
             it); new reasons may come. Lifted only by `POST /session/resume`.
     """

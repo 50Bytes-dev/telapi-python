@@ -11,6 +11,7 @@ from telapi_python.models import (
     MessagesDeletedEvent,
     PausedEvent,
 )
+from telapi_python.types import UNSET
 from telapi_python.webhooks import (
     EVENT_MODELS,
     InvalidSignature,
@@ -80,6 +81,22 @@ def test_a_delivery_verifies_and_parses_into_its_model():
     assert event.data.message.message_id == 42
     assert event.data.chat.title == "Покупатели"
     assert event.data.sender.name == "Анна"
+
+
+def test_a_message_in_a_forum_topic_or_a_channels_direct_messages_carries_where_it_is():
+    in_topic = json.loads(json.dumps(MESSAGE))
+    in_topic["data"]["message"]["topicId"] = 42
+    event = parse_event(in_topic)
+    assert event.data.message.topic_id == 42
+    assert event.data.message.monoforum_peer_id is UNSET
+
+    in_thread = json.loads(json.dumps(MESSAGE))
+    in_thread["data"]["message"]["monoforumPeerId"] = 777000
+    event = parse_event(in_thread)
+    assert event.data.message.monoforum_peer_id == 777000
+    assert event.data.message.topic_id is UNSET
+
+    assert parse_event(MESSAGE).data.message.topic_id is UNSET
 
 
 def test_headers_are_found_in_any_case():
