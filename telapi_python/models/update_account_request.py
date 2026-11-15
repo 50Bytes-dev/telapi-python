@@ -21,7 +21,7 @@ class UpdateAccountRequest:
         webhook_url (str | Unset):
         events (list[EventType] | Unset):
         proxy (str | Unset): "" = none of its own (`TELAPI_DEFAULT_PROXY` when the gateway sets one, direct otherwise);
-            a change restarts the Telegram client
+            stored trimmed, only whitespace is ""; a change restarts the Telegram client
     """
 
     name: str | Unset = UNSET

@@ -6,7 +6,7 @@ import pytest
 
 from telapi_python import AuthenticatedClient, Client
 from telapi_python.api.admin import create_account, rotate_account_token
-from telapi_python.api.chats import get_chat, list_chats, list_send_as, list_topics
+from telapi_python.api.chats import get_chat, get_history, list_chats, list_send_as, list_topics
 from telapi_python.api.health import get_health
 from telapi_python.api.login import start_qr_login, submit_login_code, submit_login_password
 from telapi_python.api.media import upload_media
@@ -73,6 +73,7 @@ ACCOUNT = {
     "webhookUrl": "",
     "events": ["All"],
     "proxy": "",
+    "usesDefaultProxy": True,
     "loggedIn": False,
     "connected": False,
     "createdAt": 1794500000,
@@ -312,6 +313,7 @@ def test_a_channels_direct_messages_answer_threads():
     assert res.threads[0].last_message.monoforum_peer_id == 777000
     assert res.threads[0].last_message.topic_id is UNSET
     assert res.next_cursor is UNSET
+    assert dict(rec.requests[0].url.params) == {}
 
 
 def test_the_senders_a_chat_takes_parse_with_their_premium_mark():
@@ -374,6 +376,38 @@ def test_chats_by_id_go_as_repeated_ids_and_answer_the_missing_ones():
     assert res.missing[1].upstream_code == "CHANNEL_PRIVATE"
     params = rec.requests[0].url.params
     assert params.get_list("ids") == ["-1001234567890", "42", "-1001111111111"]
+
+
+# The 1.2.0 schema gave limit and archived defaults, so every list_chats call sent limit=50&archived=false, and
+# the gateway refuses both next to ids or q: a call sends only the params its caller sets.
+@pytest.mark.parametrize(
+    "kwargs, params",
+    [
+        ({}, []),
+        ({"ids": [-1001234567890, 42]}, [("ids", "-1001234567890"), ("ids", "42")]),
+        ({"q": "Покуп"}, [("q", "Покуп")]),
+        ({"limit": 20, "archived": True}, [("limit", "20"), ("archived", "true")]),
+        ({"archived": False}, [("archived", "false")]),
+    ],
+)
+def test_list_chats_sends_only_the_params_its_caller_sets(kwargs, params):
+    rec = Recorder(200, {"success": True, "chats": []})
+    res = list_chats.sync(client=account_client(rec), **kwargs)
+
+    assert isinstance(res, ChatListResponse)
+    assert rec.requests[0].url.path == "/chats"
+    assert rec.requests[0].url.params.multi_items() == params
+
+
+def test_history_sends_a_limit_only_when_its_caller_sets_one():
+    rec = Recorder(200, {"success": True, "messages": []})
+    get_history.sync(-1001234567890, client=account_client(rec))
+    get_history.sync(-1001234567890, client=account_client(rec), limit=20, offset_id=501)
+
+    assert rec.requests[0].url.path == "/chats/-1001234567890/messages"
+    # offsetId keeps its schema default, 0 (from the newest), which the gateway takes with any other param.
+    assert dict(rec.requests[0].url.params) == {"offsetId": "0"}
+    assert dict(rec.requests[1].url.params) == {"limit": "20", "offsetId": "501"}
 
 
 RIGHTS = {
@@ -513,7 +547,8 @@ def test_the_account_token_goes_as_a_bearer_token():
     request = rec.requests[0]
     assert request.headers["Authorization"] == "Bearer 0123abcd"
     assert request.url.params.get_list("type") == ["group", "channel"]
-    assert request.url.params["limit"] == "50"
+    assert "limit" not in request.url.params
+    assert "archived" not in request.url.params
 
 
 def test_the_admin_token_goes_as_a_bearer_token_and_the_new_secrets_stay_out_of_repr():
@@ -528,6 +563,8 @@ def test_the_admin_token_goes_as_a_bearer_token_and_the_new_secrets_stay_out_of_
     assert res.token == "a" * 64
     assert res.webhook_secret == "b" * 64
     assert res.account.events == ["All"]
+    assert res.account.proxy == ""
+    assert res.account.uses_default_proxy is True
     assert "a" * 64 not in repr(res)
     assert "b" * 64 not in repr(res)
 

@@ -18,7 +18,7 @@ class MissingChat:
     Attributes:
         chat_id (int): The chat id as given
         code (str): Why, as an error code: `peer_not_found` (never seen by the account, or left out of Telegram's
-            answer), or the refusal Telegram gave for the read of that kind of chat; new values may come
+            answer), or the refusal Telegram gave for the read of this chat alone; new values may come
         upstream_code (str | Unset): Telegram's error, when Telegram gave one
     """
 

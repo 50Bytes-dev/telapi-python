@@ -15,9 +15,9 @@ def _get_kwargs(
     *,
     type_: list[ChatTypeFilter] | Unset = UNSET,
     q: str | Unset = UNSET,
-    limit: int | Unset = 50,
+    limit: int | Unset = UNSET,
     cursor: str | Unset = UNSET,
-    archived: bool | Unset = False,
+    archived: bool | Unset = UNSET,
     ids: list[int] | Unset = UNSET,
 ) -> dict[str, Any]:
 
@@ -141,9 +141,9 @@ def sync_detailed(
     client: AuthenticatedClient,
     type_: list[ChatTypeFilter] | Unset = UNSET,
     q: str | Unset = UNSET,
-    limit: int | Unset = 50,
+    limit: int | Unset = UNSET,
     cursor: str | Unset = UNSET,
-    archived: bool | Unset = False,
+    archived: bool | Unset = UNSET,
     ids: list[int] | Unset = UNSET,
 ) -> Response[ChatListResponse | ErrorResponse]:
     """List the chats
@@ -183,25 +183,30 @@ def sync_detailed(
     its answer is missing (`peer_not_found`); one it returns without a
     dialog (a user never written to) has its counters at zero. When
     Telegram refuses the whole call for one chat it no longer shows the
-    account, the chats' objects are read with at most one call per
-    kind (`users.getUsers`, `messages.getChats`,
-    `channels.getChannels`): a chat the account left or was banned
-    from comes from its object without its dialog row; the others get
-    theirs from a second `messages.getPeerDialogs` (or come from their
-    objects when none could be set apart or that call is refused too);
-    a kind whose read Telegram refuses as a whole is missing with that
-    refusal's `code` and `upstreamCode`. The kind is not split into
-    smaller reads, so one refused chat can hide the others of its kind
-    in that answer; ask for a missing chat alone to tell whether it is
-    the refused one. At most five calls; a wait, a
-    timeout or any other failure answers the whole request.
+    account, the chats' objects are read with one call per kind
+    (`users.getUsers`, `messages.getChats`, `channels.getChannels`): a
+    chat the account left or was banned from comes from its object
+    without its dialog row; the others get theirs from a second
+    `messages.getPeerDialogs` (or come from their objects when none
+    could be set apart or that call is refused too). When Telegram
+    refuses a kind's read as a whole for a chat in it (`peer_not_found`
+    or `write_forbidden`), its chats are split in halves and each half
+    read again, until each refused chat is read alone: that chat is
+    missing with its own refusal's `code` and `upstreamCode`, and the
+    chats of the halves Telegram answers are answered as usual. At most
+    five calls when no kind's read is refused; the halving adds calls
+    only on a refusal, at most 1 + 2·k·⌈log₂ n⌉ reads for k refused
+    chats among n of a kind and never more than 2n − 1 (one refused
+    channel among 100: at most 15; at worst 2 + 199 calls in all). A
+    wait, a timeout or any other failure of any call answers the whole
+    request, and nothing is retried.
 
     Args:
         type_ (list[ChatTypeFilter] | Unset):
         q (str | Unset):
-        limit (int | Unset):  Default: 50.
+        limit (int | Unset):
         cursor (str | Unset):
-        archived (bool | Unset):  Default: False.
+        archived (bool | Unset):
         ids (list[int] | Unset):
 
     Raises:
@@ -233,9 +238,9 @@ def sync(
     client: AuthenticatedClient,
     type_: list[ChatTypeFilter] | Unset = UNSET,
     q: str | Unset = UNSET,
-    limit: int | Unset = 50,
+    limit: int | Unset = UNSET,
     cursor: str | Unset = UNSET,
-    archived: bool | Unset = False,
+    archived: bool | Unset = UNSET,
     ids: list[int] | Unset = UNSET,
 ) -> ChatListResponse | ErrorResponse | None:
     """List the chats
@@ -275,25 +280,30 @@ def sync(
     its answer is missing (`peer_not_found`); one it returns without a
     dialog (a user never written to) has its counters at zero. When
     Telegram refuses the whole call for one chat it no longer shows the
-    account, the chats' objects are read with at most one call per
-    kind (`users.getUsers`, `messages.getChats`,
-    `channels.getChannels`): a chat the account left or was banned
-    from comes from its object without its dialog row; the others get
-    theirs from a second `messages.getPeerDialogs` (or come from their
-    objects when none could be set apart or that call is refused too);
-    a kind whose read Telegram refuses as a whole is missing with that
-    refusal's `code` and `upstreamCode`. The kind is not split into
-    smaller reads, so one refused chat can hide the others of its kind
-    in that answer; ask for a missing chat alone to tell whether it is
-    the refused one. At most five calls; a wait, a
-    timeout or any other failure answers the whole request.
+    account, the chats' objects are read with one call per kind
+    (`users.getUsers`, `messages.getChats`, `channels.getChannels`): a
+    chat the account left or was banned from comes from its object
+    without its dialog row; the others get theirs from a second
+    `messages.getPeerDialogs` (or come from their objects when none
+    could be set apart or that call is refused too). When Telegram
+    refuses a kind's read as a whole for a chat in it (`peer_not_found`
+    or `write_forbidden`), its chats are split in halves and each half
+    read again, until each refused chat is read alone: that chat is
+    missing with its own refusal's `code` and `upstreamCode`, and the
+    chats of the halves Telegram answers are answered as usual. At most
+    five calls when no kind's read is refused; the halving adds calls
+    only on a refusal, at most 1 + 2·k·⌈log₂ n⌉ reads for k refused
+    chats among n of a kind and never more than 2n − 1 (one refused
+    channel among 100: at most 15; at worst 2 + 199 calls in all). A
+    wait, a timeout or any other failure of any call answers the whole
+    request, and nothing is retried.
 
     Args:
         type_ (list[ChatTypeFilter] | Unset):
         q (str | Unset):
-        limit (int | Unset):  Default: 50.
+        limit (int | Unset):
         cursor (str | Unset):
-        archived (bool | Unset):  Default: False.
+        archived (bool | Unset):
         ids (list[int] | Unset):
 
     Raises:
@@ -320,9 +330,9 @@ async def asyncio_detailed(
     client: AuthenticatedClient,
     type_: list[ChatTypeFilter] | Unset = UNSET,
     q: str | Unset = UNSET,
-    limit: int | Unset = 50,
+    limit: int | Unset = UNSET,
     cursor: str | Unset = UNSET,
-    archived: bool | Unset = False,
+    archived: bool | Unset = UNSET,
     ids: list[int] | Unset = UNSET,
 ) -> Response[ChatListResponse | ErrorResponse]:
     """List the chats
@@ -362,25 +372,30 @@ async def asyncio_detailed(
     its answer is missing (`peer_not_found`); one it returns without a
     dialog (a user never written to) has its counters at zero. When
     Telegram refuses the whole call for one chat it no longer shows the
-    account, the chats' objects are read with at most one call per
-    kind (`users.getUsers`, `messages.getChats`,
-    `channels.getChannels`): a chat the account left or was banned
-    from comes from its object without its dialog row; the others get
-    theirs from a second `messages.getPeerDialogs` (or come from their
-    objects when none could be set apart or that call is refused too);
-    a kind whose read Telegram refuses as a whole is missing with that
-    refusal's `code` and `upstreamCode`. The kind is not split into
-    smaller reads, so one refused chat can hide the others of its kind
-    in that answer; ask for a missing chat alone to tell whether it is
-    the refused one. At most five calls; a wait, a
-    timeout or any other failure answers the whole request.
+    account, the chats' objects are read with one call per kind
+    (`users.getUsers`, `messages.getChats`, `channels.getChannels`): a
+    chat the account left or was banned from comes from its object
+    without its dialog row; the others get theirs from a second
+    `messages.getPeerDialogs` (or come from their objects when none
+    could be set apart or that call is refused too). When Telegram
+    refuses a kind's read as a whole for a chat in it (`peer_not_found`
+    or `write_forbidden`), its chats are split in halves and each half
+    read again, until each refused chat is read alone: that chat is
+    missing with its own refusal's `code` and `upstreamCode`, and the
+    chats of the halves Telegram answers are answered as usual. At most
+    five calls when no kind's read is refused; the halving adds calls
+    only on a refusal, at most 1 + 2·k·⌈log₂ n⌉ reads for k refused
+    chats among n of a kind and never more than 2n − 1 (one refused
+    channel among 100: at most 15; at worst 2 + 199 calls in all). A
+    wait, a timeout or any other failure of any call answers the whole
+    request, and nothing is retried.
 
     Args:
         type_ (list[ChatTypeFilter] | Unset):
         q (str | Unset):
-        limit (int | Unset):  Default: 50.
+        limit (int | Unset):
         cursor (str | Unset):
-        archived (bool | Unset):  Default: False.
+        archived (bool | Unset):
         ids (list[int] | Unset):
 
     Raises:
@@ -410,9 +425,9 @@ async def asyncio(
     client: AuthenticatedClient,
     type_: list[ChatTypeFilter] | Unset = UNSET,
     q: str | Unset = UNSET,
-    limit: int | Unset = 50,
+    limit: int | Unset = UNSET,
     cursor: str | Unset = UNSET,
-    archived: bool | Unset = False,
+    archived: bool | Unset = UNSET,
     ids: list[int] | Unset = UNSET,
 ) -> ChatListResponse | ErrorResponse | None:
     """List the chats
@@ -452,25 +467,30 @@ async def asyncio(
     its answer is missing (`peer_not_found`); one it returns without a
     dialog (a user never written to) has its counters at zero. When
     Telegram refuses the whole call for one chat it no longer shows the
-    account, the chats' objects are read with at most one call per
-    kind (`users.getUsers`, `messages.getChats`,
-    `channels.getChannels`): a chat the account left or was banned
-    from comes from its object without its dialog row; the others get
-    theirs from a second `messages.getPeerDialogs` (or come from their
-    objects when none could be set apart or that call is refused too);
-    a kind whose read Telegram refuses as a whole is missing with that
-    refusal's `code` and `upstreamCode`. The kind is not split into
-    smaller reads, so one refused chat can hide the others of its kind
-    in that answer; ask for a missing chat alone to tell whether it is
-    the refused one. At most five calls; a wait, a
-    timeout or any other failure answers the whole request.
+    account, the chats' objects are read with one call per kind
+    (`users.getUsers`, `messages.getChats`, `channels.getChannels`): a
+    chat the account left or was banned from comes from its object
+    without its dialog row; the others get theirs from a second
+    `messages.getPeerDialogs` (or come from their objects when none
+    could be set apart or that call is refused too). When Telegram
+    refuses a kind's read as a whole for a chat in it (`peer_not_found`
+    or `write_forbidden`), its chats are split in halves and each half
+    read again, until each refused chat is read alone: that chat is
+    missing with its own refusal's `code` and `upstreamCode`, and the
+    chats of the halves Telegram answers are answered as usual. At most
+    five calls when no kind's read is refused; the halving adds calls
+    only on a refusal, at most 1 + 2·k·⌈log₂ n⌉ reads for k refused
+    chats among n of a kind and never more than 2n − 1 (one refused
+    channel among 100: at most 15; at worst 2 + 199 calls in all). A
+    wait, a timeout or any other failure of any call answers the whole
+    request, and nothing is retried.
 
     Args:
         type_ (list[ChatTypeFilter] | Unset):
         q (str | Unset):
-        limit (int | Unset):  Default: 50.
+        limit (int | Unset):
         cursor (str | Unset):
-        archived (bool | Unset):  Default: False.
+        archived (bool | Unset):
         ids (list[int] | Unset):
 
     Raises:

@@ -14,7 +14,7 @@ from ...types import UNSET, Response, Unset
 def _get_kwargs(
     chat_id: int,
     *,
-    limit: int | Unset = 50,
+    limit: int | Unset = UNSET,
     offset_id: int | Unset = 0,
 ) -> dict[str, Any]:
 
@@ -130,7 +130,7 @@ def sync_detailed(
     chat_id: int,
     *,
     client: AuthenticatedClient,
-    limit: int | Unset = 50,
+    limit: int | Unset = UNSET,
     offset_id: int | Unset = 0,
 ) -> Response[ErrorResponse | HistoryResponse]:
     """The chat's history
@@ -142,7 +142,7 @@ def sync_detailed(
 
     Args:
         chat_id (int):
-        limit (int | Unset):  Default: 50.
+        limit (int | Unset):
         offset_id (int | Unset):  Default: 0.
 
     Raises:
@@ -170,7 +170,7 @@ def sync(
     chat_id: int,
     *,
     client: AuthenticatedClient,
-    limit: int | Unset = 50,
+    limit: int | Unset = UNSET,
     offset_id: int | Unset = 0,
 ) -> ErrorResponse | HistoryResponse | None:
     """The chat's history
@@ -182,7 +182,7 @@ def sync(
 
     Args:
         chat_id (int):
-        limit (int | Unset):  Default: 50.
+        limit (int | Unset):
         offset_id (int | Unset):  Default: 0.
 
     Raises:
@@ -205,7 +205,7 @@ async def asyncio_detailed(
     chat_id: int,
     *,
     client: AuthenticatedClient,
-    limit: int | Unset = 50,
+    limit: int | Unset = UNSET,
     offset_id: int | Unset = 0,
 ) -> Response[ErrorResponse | HistoryResponse]:
     """The chat's history
@@ -217,7 +217,7 @@ async def asyncio_detailed(
 
     Args:
         chat_id (int):
-        limit (int | Unset):  Default: 50.
+        limit (int | Unset):
         offset_id (int | Unset):  Default: 0.
 
     Raises:
@@ -243,7 +243,7 @@ async def asyncio(
     chat_id: int,
     *,
     client: AuthenticatedClient,
-    limit: int | Unset = 50,
+    limit: int | Unset = UNSET,
     offset_id: int | Unset = 0,
 ) -> ErrorResponse | HistoryResponse | None:
     """The chat's history
@@ -255,7 +255,7 @@ async def asyncio(
 
     Args:
         chat_id (int):
-        limit (int | Unset):  Default: 50.
+        limit (int | Unset):
         offset_id (int | Unset):  Default: 0.
 
     Raises:

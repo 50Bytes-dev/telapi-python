@@ -14,7 +14,7 @@ from ...types import UNSET, Response, Unset
 def _get_kwargs(
     chat_id: int,
     *,
-    limit: int | Unset = 50,
+    limit: int | Unset = UNSET,
     cursor: str | Unset = UNSET,
     q: str | Unset = UNSET,
 ) -> dict[str, Any]:
@@ -133,7 +133,7 @@ def sync_detailed(
     chat_id: int,
     *,
     client: AuthenticatedClient,
-    limit: int | Unset = 50,
+    limit: int | Unset = UNSET,
     cursor: str | Unset = UNSET,
     q: str | Unset = UNSET,
 ) -> Response[ErrorResponse | TopicListResponse]:
@@ -169,7 +169,7 @@ def sync_detailed(
 
     Args:
         chat_id (int):
-        limit (int | Unset):  Default: 50.
+        limit (int | Unset):
         cursor (str | Unset):
         q (str | Unset):
 
@@ -199,7 +199,7 @@ def sync(
     chat_id: int,
     *,
     client: AuthenticatedClient,
-    limit: int | Unset = 50,
+    limit: int | Unset = UNSET,
     cursor: str | Unset = UNSET,
     q: str | Unset = UNSET,
 ) -> ErrorResponse | TopicListResponse | None:
@@ -235,7 +235,7 @@ def sync(
 
     Args:
         chat_id (int):
-        limit (int | Unset):  Default: 50.
+        limit (int | Unset):
         cursor (str | Unset):
         q (str | Unset):
 
@@ -260,7 +260,7 @@ async def asyncio_detailed(
     chat_id: int,
     *,
     client: AuthenticatedClient,
-    limit: int | Unset = 50,
+    limit: int | Unset = UNSET,
     cursor: str | Unset = UNSET,
     q: str | Unset = UNSET,
 ) -> Response[ErrorResponse | TopicListResponse]:
@@ -296,7 +296,7 @@ async def asyncio_detailed(
 
     Args:
         chat_id (int):
-        limit (int | Unset):  Default: 50.
+        limit (int | Unset):
         cursor (str | Unset):
         q (str | Unset):
 
@@ -324,7 +324,7 @@ async def asyncio(
     chat_id: int,
     *,
     client: AuthenticatedClient,
-    limit: int | Unset = 50,
+    limit: int | Unset = UNSET,
     cursor: str | Unset = UNSET,
     q: str | Unset = UNSET,
 ) -> ErrorResponse | TopicListResponse | None:
@@ -360,7 +360,7 @@ async def asyncio(
 
     Args:
         chat_id (int):
-        limit (int | Unset):  Default: 50.
+        limit (int | Unset):
         cursor (str | Unset):
         q (str | Unset):
 

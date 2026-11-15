@@ -4,7 +4,7 @@ accounts** (real people's accounts, not bots): it logs into an account by QR cod
 phone number and code, keeps the session, sends text, photos, albums, documents, audio and video, edits and deletes
 messages, reads history, lists and manages chats and their members, forum topics and a channel's direct messages,
 looks up users, and reports what happens in the account as signed webhooks. This package follows telapi's version
-(1.2.0).
+(1.2.1).
 
 The package is generated from the gateway's OpenAPI schema (`static/api/spec.yml` in telapi; the gateway serves it at
 `/api/spec.yml`, with the Swagger UI at `/api/`). The full contract, with every code and when it comes, is

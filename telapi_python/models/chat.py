@@ -80,9 +80,9 @@ class Chat:
             noforwards (bool | Unset): The chat's content is protected from forwarding and copying out of it; it never
                 limits sending into the chat or relay. A private chat's comes in the full view only.
             send_paid_messages_stars (int | Unset): The chat charges Stars per message. The list gives the chat's price (a
-                user's or a supergroup's); the full view gives what this account pays instead, `0` when the account is exempt
-                and absent when it pays nothing. Never on a broadcast channel (its direct messages are priced on its monoforum).
-                Never changes `canWrite`.
+                user's, a supergroup's, or a channel's direct messages, its monoforum's); the full view gives what this account
+                pays instead, `0` when the account is exempt and absent when it pays nothing. Never on a broadcast channel (its
+                direct messages are priced on its monoforum). Never changes `canWrite`.
             default_banned_rights (ChatBannedRights | Unset): Telegram's rights of a group member: each right is `true`
                 where it
                 is taken away, and every right is always present. `untilDate` comes

@@ -29,6 +29,9 @@ class Account:
         proxy (str): The proxy of the account's Telegram traffic with its password or secret masked; "" = none of its
             own (`TELAPI_DEFAULT_PROXY` when the gateway sets one, direct otherwise) Example:
             socks5://user:***@10.0.0.5:1080.
+        uses_default_proxy (bool): The account connects through the gateway's `TELAPI_DEFAULT_PROXY`, since it has no
+            proxy of its own and the gateway sets one; false with `proxy` "" means direct. Only the fact is shown, never the
+            default proxy itself
         logged_in (bool): A Telegram login is stored
         connected (bool): The Telegram client is connected
         created_at (int): Unix time in seconds Example: 1794500000.
@@ -45,6 +48,7 @@ class Account:
     webhook_url: str
     events: list[str]
     proxy: str
+    uses_default_proxy: bool
     logged_in: bool
     connected: bool
     created_at: int
@@ -62,6 +66,8 @@ class Account:
         events = self.events
 
         proxy = self.proxy
+
+        uses_default_proxy = self.uses_default_proxy
 
         logged_in = self.logged_in
 
@@ -86,6 +92,7 @@ class Account:
                 "webhookUrl": webhook_url,
                 "events": events,
                 "proxy": proxy,
+                "usesDefaultProxy": uses_default_proxy,
                 "loggedIn": logged_in,
                 "connected": connected,
                 "createdAt": created_at,
@@ -114,6 +121,8 @@ class Account:
 
         proxy = d.pop("proxy")
 
+        uses_default_proxy = d.pop("usesDefaultProxy")
+
         logged_in = d.pop("loggedIn")
 
         connected = d.pop("connected")
@@ -140,6 +149,7 @@ class Account:
             webhook_url=webhook_url,
             events=events,
             proxy=proxy,
+            uses_default_proxy=uses_default_proxy,
             logged_in=logged_in,
             connected=connected,
             created_at=created_at,
